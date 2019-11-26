@@ -3,8 +3,13 @@ import sys
 import time
 import socket
 
+def log(txt):
+        print("[CLIENT] "+txt)
+
 class IRC_client:
     
+    
+
     def __init__(self,server, port, bot_nick, channel):
         self.server = server
         self.port = port
@@ -21,7 +26,7 @@ class IRC_client:
 
 
     def join_server(self):
-        print("[CLIENT] Joining Server: "+self.server)
+        log("Joining Server: "+self.server)
 
         self.isock.connect((self.server, self.port))
         #self.isock.setblocking(0)
@@ -33,27 +38,27 @@ class IRC_client:
         msg += self.real_name
         msg += ":Hi\r\n"
 
-        print("[CLIENT] Setting user: "+msg)
+        log("Setting user: "+msg.strip())
         self.isock.send(msg.encode());
         time.sleep(0.5)
 
     def set_nick(self, nick):
         msg = "NICK " + nick + "\r\n"
-        print("[CLIENT] Setting nick: "+msg)
+        log("Setting nick: "+msg.strip())
         self.isock.send(msg.encode())
         time.sleep(0.5)
         
     def join_channel(self, channel):
         msg = "JOIN " + channel 
         msg += "\r\n"
-        print("[CLIENT] Joining channel "+ msg)
+        log("Joining channel "+ msg.strip())
         self.isock.send(msg.encode())
         time.sleep(0.5)
 
     def msg(self, dest, message):
         msg = "PRIVMSG {0} :{1} \n".format(dest, message)
 
-        print("[CLIENT] {}".format(msg) )
+        log(msg.strip())
         self.isock.send(bytes(msg,"UTF-8"))
         time.sleep(0.5)
 
@@ -63,6 +68,7 @@ class IRC_client:
         msg = "PONG "+ server 
         msg += "\r\n"
         self.isock.send(msg.encode())
+        log(msg.strip())
         time.sleep(1)
 
 
