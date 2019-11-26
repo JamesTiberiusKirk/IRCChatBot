@@ -2,3 +2,4 @@ vms
 .idea
 __pycache__/
 *.pyc
+miniircd.py
