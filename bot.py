@@ -39,7 +39,7 @@ def parse_priv_msg(msg, msg_sender):
 def parse_channel_msg(msg, channel):
     if msg[0] != "!":
         bot_log("No Command found, did nothing")
-        return;
+        return
 
     bot_log("Command "+msg+" on "+channel)
     
@@ -50,31 +50,31 @@ def parse_channel_msg(msg, channel):
         bot.msg(channel, datetime.now().strftime("%H:%M:%S"))
     else:
         bot.msg(channel, "No such command")
-        
+
 while True:
     time.sleep(0.1)
     try:
         byte_str = bot.isock.recv(1024)
         f_msg = byte_str.decode()
         
-        print("[IRC] "+f_msg)
-
-        msg_sender = f_msg.split(":")[1].split("!")[0]
-        p_command = f_msg.split(" ")[1] #protocol command
-        msg_target = f_msg.split(" ")[2] 
-        msg = f_msg.split(":")[-1].strip()
-
-        if p_command == "PRIVMSG":
-            if msg_target == bot_nick:
-                parse_priv_msg(msg, msg_sender)
-            elif msg_target == channel:
-                parse_channel_msg(msg, channel)
-
-
         if f_msg.find("PING") != -1 :
             bot.pong(f_msg.split(" ")[1])
+        else:
+            print("[IRC] "+f_msg)
+        
+            msg_sender = f_msg.split(":")[1].split("!")[0]
+            p_command = f_msg.split(" ")[1] #protocol command
+            msg_target = f_msg.split(" ")[2] 
+            msg = f_msg.split(":")[-1].strip()
+
+            if p_command == "PRIVMSG":
+                if msg_target == bot_nick:
+                    parse_priv_msg(msg, msg_sender)
+                elif msg_target == channel:
+                    parse_channel_msg(msg, channel)
 
     except error as serr:
+        print(len(f_msg))
         if serr.errno != errno.ECONNREFUSED:
             # Not the error we are looking for, re-raise
             raise serr
