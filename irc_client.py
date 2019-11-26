@@ -25,7 +25,7 @@ class IRC_client:
 
         self.isock.connect((self.server, self.port))
         #self.isock.setblocking(0)
-        time.sleep(1)
+        time.sleep(0.5)
         
         msg = "USER "+self.bot_nick+" "
         msg += self.hostname+" " 
@@ -35,23 +35,29 @@ class IRC_client:
 
         print("[CLIENT] Setting user: "+msg)
         self.isock.send(msg.encode());
-        time.sleep(1)
+        time.sleep(0.5)
 
     def set_nick(self, nick):
         msg = "NICK " + nick + "\r\n"
         print("[CLIENT] Setting nick: "+msg)
         self.isock.send(msg.encode())
-        time.sleep(1)
+        time.sleep(0.5)
         
     def join_channel(self, channel):
         msg = "JOIN " + channel 
         msg += "\r\n"
         print("[CLIENT] Joining channel "+ msg)
         self.isock.send(msg.encode())
-        time.sleep(1)
+        time.sleep(0.5)
 
-    def msg(self, user, message):
-        print(user+" "+message)
+    def msg(self, dest, message):
+        msg = "PRIVMSG " + dest +" " + message
+        msg += "\r\n"
+        print("[CLIENT] " + msg)
+        print(message)
+        self.isock.send(msg.encode())
+        time.sleep(0.5)
+
 
 
     def pong(self, server):
