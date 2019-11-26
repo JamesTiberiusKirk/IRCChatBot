@@ -12,47 +12,53 @@ class IRC_client:
         self.channel = channel
         self.hostname = bot_nick
         self.real_name = bot_nick
+
+        self.isock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         self.join_server()
         self.set_nick(self.bot_nick)
         self.join_channel(self.channel)
 
 
     def join_server(self):
-        print("Joining Server: "+self.server)
+        print("[CLIENT] Joining Server: "+self.server)
 
-        self.isock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.iscok.connect(self.server, self.port)
-        self.isock.setblocking(False)
+        self.isock.connect((self.server, self.port))
+        #self.isock.setblocking(0)
         time.sleep(1)
         
-        msg = "USER "+self.bot_nick+" "+ self.hostname+" " + servername+ " " + real_name
+        msg = "USER "+self.bot_nick+" "
+        msg += self.hostname+" " 
+        msg += self.server+ " " 
+        msg += self.real_name
+        msg += ":Hi\r\n"
 
-        print("Setting user: "+msg)
+        print("[CLIENT] Setting user: "+msg)
         self.isock.send(msg.encode());
-
-
+        time.sleep(1)
 
     def set_nick(self, nick):
-        msg = "NICK " + nick
-        print("Setting nick: "+msg)
+        msg = "NICK " + nick + "\r\n"
+        print("[CLIENT] Setting nick: "+msg)
         self.isock.send(msg.encode())
+        time.sleep(1)
         
     def join_channel(self, channel):
         msg = "JOIN " + channel 
-        print("Joining channel "+ msg)
+        msg += "\r\n"
+        print("[CLIENT] Joining channel "+ msg)
         self.isock.send(msg.encode())
-
-    def msg(self,message):
-        pring(message)
+        time.sleep(1)
 
     def msg(self, user, message):
         print(user+" "+message)
 
 
-    def ping_back(self, server):
-        msg = "PONG "+ server
-        #print()
-        self.isocket.send(msg.encode())
+    def pong(self, server):
+        msg = "PONG "+ server 
+        msg += "\r\n"
+        self.isock.send(msg.encode())
+        time.sleep(1)
 
 
 
