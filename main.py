@@ -1,31 +1,65 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 import time
 from irc_client import *
 
 import errno
 from socket import error as socket_error
 
+def bot_log(txt):
+    print("[Bot] {}".format(txt))
 
-bot = IRC_client("localhost",6667, "pyBot" ,"#test")
+
+server = "localhost"
+port = 6667
+bot_nick = "pyBot"
+channel = "#test"
+
+bot = IRC_client(server,port,bot_nick,channel)
 time.sleep(1)
 
-bot.msg("#test", "hello")
+bot.msg(channel, "Bot ready")
+bot_log("READY")
+
+def parse_priv_msg(msg, msg_sender):
+    print(msg+" "+msg_sender)
+
+def parse_channel_msg(msg, channel):
+    if msg.find("!") == -1:
+        bot_log("No Command found, did nothing")
+        return;
+    
+    bot_log("Command "+msg+" on "+channel)
+    
+    if msg.find("!day") != -1:
+        bot.msg(channel, datetime.now().strftime("%d/%m/%Y"))
+    elif msg.find("!time") != -1:
+        bot.msg(channel, datetime.now().strftime("%H:%M:%S"))
 
 while True:
     time.sleep(0.1)
     try:
         byte_str = bot.isock.recv(1024)
-        msg = byte_str.decode()
-        sender_uname = msg.split(":")[1].split("!")[0]
-        print(msg)
+        f_msg = byte_str.decode()
+        
+        print("[IRC] "+f_msg)
 
-        if msg.find("PING") != -1 :
-            bot.pong(msg.split(" ")[1])
+        msg_sender = f_msg.split(":")[1].split("!")[0]
+        p_command = f_msg.split(" ")[1] #protocol command
+        msg_target = f_msg.split(" ")[2] 
+        msg = f_msg.split(":")[-1].strip()
+
+        if p_command == "PRIVMSG":
+            if msg_target == bot_nick:
+                parse_priv_msg(msg, msg_sender)
+            elif msg_target == channel:
+                parse_channel_msg(msg, channel)
+
+
+        if f_msg.find("PING") != -1 :
+            bot.pong(f_msg.split(" ")[1])
             #print("pong")
-
-        if msg.find(":@hi") != -1 :
-            bot.msg(sender_uname,"hello")
 
     except socket_error as serr:
         if serr.errno != errno.ECONNREFUSED:
@@ -33,3 +67,4 @@ while True:
             raise serr
         # connection refused
         # handle here
+

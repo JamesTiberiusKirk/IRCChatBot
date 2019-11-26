@@ -51,11 +51,10 @@ class IRC_client:
         time.sleep(0.5)
 
     def msg(self, dest, message):
-        msg = "PRIVMSG " + dest +" " + message
-        msg += "\r\n"
-        print("[CLIENT] " + msg)
-        print(message)
-        self.isock.send(msg.encode())
+        msg = "PRIVMSG {0} {1} \n".format(dest, message)
+
+        print("[CLIENT] {}".format(msg) )
+        self.isock.send(bytes(msg,"UTF-8"))
         time.sleep(0.5)
 
 
