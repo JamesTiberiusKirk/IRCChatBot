@@ -5,6 +5,7 @@ import time
 import requests
 import json
 import random
+import calendar
 
 from irc_client import *
 from datetime import datetime
@@ -36,17 +37,20 @@ def parse_priv_msg(msg, msg_sender):
             get_rand_fact(random.randint(-100,1000)))
 
 def parse_channel_msg(msg, channel):
-    if msg.find("!") == -1:
+    if msg[0] != "!":
         bot_log("No Command found, did nothing")
         return;
-    
+
     bot_log("Command "+msg+" on "+channel)
     
     if msg.find("!day") != -1:
-        bot.msg(channel, datetime.now().strftime("%d/%m/%Y"))
+        day = calendar.day_name[datetime.today().weekday()]
+        bot.msg(channel, day)
     elif msg.find("!time") != -1:
         bot.msg(channel, datetime.now().strftime("%H:%M:%S"))
-
+    else:
+        bot.msg(channel, "No such command")
+        
 while True:
     time.sleep(0.1)
     try:
