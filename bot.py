@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 
-from datetime import datetime
+import errno
 import time
 import requests
 import json
 import random
-from irc_client import *
 
-import errno
-from socket import error as socket_error
+from irc_client import *
+from datetime import datetime
+from socket import error 
 
 def bot_log(txt):
     print("[Bot] {}".format(txt))
-
 
 server = "localhost"
 port = 6667
@@ -26,11 +25,8 @@ bot.msg(channel, "Bot ready")
 bot_log("READY")
 
 def get_rand_fact(num):
-
     url = "http://numbersapi.com/{}".format(num)
-
     headers = {"Content-Type":"application/json"}
-
     response_raw = requests.request("GET", url, headers=headers)
     response = response_raw.json()
     return response["text"]
@@ -73,9 +69,8 @@ while True:
 
         if f_msg.find("PING") != -1 :
             bot.pong(f_msg.split(" ")[1])
-            #print("pong")
 
-    except socket_error as serr:
+    except error as serr:
         if serr.errno != errno.ECONNREFUSED:
             # Not the error we are looking for, re-raise
             raise serr
