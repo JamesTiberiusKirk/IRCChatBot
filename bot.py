@@ -2,6 +2,9 @@
 
 from datetime import datetime
 import time
+import requests
+import json
+import random
 from irc_client import *
 
 import errno
@@ -22,8 +25,19 @@ time.sleep(1)
 bot.msg(channel, "Bot ready")
 bot_log("READY")
 
+def get_rand_fact(num):
+
+    url = "http://numbersapi.com/{}".format(num)
+
+    headers = {"Content-Type":"application/json"}
+
+    response_raw = requests.request("GET", url, headers=headers)
+    response = response_raw.json()
+    return response["text"]
+
 def parse_priv_msg(msg, msg_sender):
-    print(msg+" "+msg_sender)
+    bot.msg(msg_sender,
+            get_rand_fact(random.randint(-100,1000)))
 
 def parse_channel_msg(msg, channel):
     if msg.find("!") == -1:
