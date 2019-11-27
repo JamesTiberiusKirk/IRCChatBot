@@ -54,7 +54,7 @@ def parse_channel_msg(msg, channel):
 while True:
     time.sleep(0.1)
     try:
-        byte_str = bot.isock.recv(1024)
+        byte_str = bot.isock.recv(512)
         f_msg = byte_str.decode()
         
         if f_msg.find("PING") != -1 :
