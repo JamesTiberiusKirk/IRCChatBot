@@ -1,4 +1,3 @@
-
 import sys
 import time
 import socket
@@ -7,8 +6,6 @@ def log(txt):
         print("[CLIENT] "+txt)
 
 class IRC_client:
-    
-    
 
     def __init__(self,server, port, bot_nick, channel):
         self.server = server
@@ -35,7 +32,7 @@ class IRC_client:
         msg += self.hostname+" " 
         msg += self.server+ " " 
         msg += self.real_name
-        msg += ":Hi\r\n"
+        msg += "\r\n"
 
         self.set_nick(self.bot_nick)
 

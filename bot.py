@@ -16,16 +16,11 @@ def bot_log(txt):
 
 server = "localhost"
 port = 6667
-bot_nick = "pyBot"
+bot_nick = "manj-gnome"
 channel = "#test"
 
-bot = IRC_client(server,port,bot_nick,channel)
-time.sleep(1)
-
-bot.msg(channel, "Bot ready")
-bot_log("READY")
-
 def get_rand_fact(num):
+    # Using a random facts API
     url = "http://numbersapi.com/{}".format(num)
     headers = {"Content-Type":"application/json"}
     response_raw = requests.request("GET", url, headers=headers)
@@ -51,6 +46,21 @@ def parse_channel_msg(msg, channel):
     else:
         bot.msg(channel, "No such command")
 
+def proc_s_code(s_code):
+    if s_code == "433":
+        bot_log("Username already taken")
+        bot_nick = "{}_".format(bot_nick)
+        bot_log("Trying again with {}".format(bot_nick))
+
+        bot.set_nick(bot_nick)
+        #exit(1)
+
+bot = IRC_client(server,port,bot_nick,channel)
+time.sleep(1)
+
+bot.msg(channel, "Bot ready")
+bot_log("READY")
+
 while True:
     time.sleep(0.1)
     try:
@@ -62,16 +72,22 @@ while True:
         else:
             print("[IRC] "+f_msg)
         
-            msg_sender = f_msg.split(":")[1].split("!")[0]
-            p_command = f_msg.split(" ")[1] #protocol command
-            msg_target = f_msg.split(" ")[2] 
-            msg = f_msg.split(":")[-1].strip()
+            try:
+                s_code = f_msg.split(" ")[1]
+                proc_s_code(s_code)
 
-            if p_command == "PRIVMSG":
-                if msg_target == bot_nick:
-                    parse_priv_msg(msg, msg_sender)
-                elif msg_target == channel:
-                    parse_channel_msg(msg, channel)
+                msg_sender = f_msg.split(":")[1].split("!")[0]
+                p_command = f_msg.split(" ")[1] #protocol command
+                msg_target = f_msg.split(" ")[2] 
+                msg = f_msg.split(":")[-1].strip()
+
+                if p_command == "PRIVMSG":
+                    if msg_target == bot_nick:
+                        parse_priv_msg(msg, msg_sender)
+                    elif msg_target == channel:
+                        parse_channel_msg(msg, channel)
+            except Exception:
+                pass
 
     except error as serr:
         print(len(f_msg))
