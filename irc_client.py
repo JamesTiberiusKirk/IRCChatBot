@@ -21,7 +21,6 @@ class IRC_client:
         self.isock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         self.join_server()
-        self.set_nick(self.bot_nick)
         self.join_channel(self.channel)
 
 
@@ -37,6 +36,8 @@ class IRC_client:
         msg += self.server+ " " 
         msg += self.real_name
         msg += ":Hi\r\n"
+
+        self.set_nick(self.bot_nick)
 
         log("Setting user: "+msg.strip())
         self.isock.send(msg.encode());
