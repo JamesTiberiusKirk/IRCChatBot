@@ -14,11 +14,6 @@ from socket import error
 def bot_log(txt):
     print("[Bot] {}".format(txt))
 
-server = "localhost"
-port = 6667
-bot_nick = "manj-gnome"
-channel = "#test"
-
 def get_rand_fact(num):
     # Using a random facts API
     url = "http://numbersapi.com/{}".format(num)
@@ -49,11 +44,17 @@ def parse_channel_msg(msg, channel):
 def proc_s_code(s_code):
     if s_code == "433":
         bot_log("Username already taken")
-        bot_nick = "{}_".format(bot_nick)
-        bot_log("Trying again with {}".format(bot_nick))
-
-        bot.set_nick(bot_nick)
-        #exit(1)
+        bot_log("Exiting...") 
+        bot.isock.close()
+        exit(1)
+        #bot = IRC_client(server,port,"test",channel)
+        #bot.msg(channel, "Bot ready")
+        #bot_log("READY")
+    
+server = "localhost"
+port = 6667
+bot_nick = "pyBot"
+channel = "#test"
 
 bot = IRC_client(server,port,bot_nick,channel)
 time.sleep(1)
