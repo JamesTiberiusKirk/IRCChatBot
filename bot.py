@@ -92,9 +92,5 @@ while True:
 
     except error as serr:
         print(len(f_msg))
-        if serr.errno != errno.ECONNREFUSED:
-            # Not the error we are looking for, re-raise
-            raise serr
-        # connection refused
-        # handle here
+        pass
 
