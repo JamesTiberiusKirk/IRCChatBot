@@ -56,16 +56,18 @@ def proc_s_code(s_code):
         exit(1)
 
 
-# server = "10.0.42.17"
-server = "localhost"
+server = "10.0.42.17"
+# server = "localhost"
 port = 6667
 bot_nick = "pyBot"
 channel = "#test"
 
+# Parcing sys.argv 
 try:
     if sys.argv[1] == "-h":
         print("[Usage] ./bot.py <server> <port> <bot_nick> <channel with no '#'>")
         exit(0)
+    
     server = sys.argv[1]
     port = int(sys.argv[2])
     bot_nick = sys.argv[3]
