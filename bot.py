@@ -2,7 +2,7 @@
 
 import errno
 import time
-import requests
+import requests # Used to get random facts 
 import json
 import random
 import calendar
@@ -12,10 +12,10 @@ from datetime import datetime
 from socket import error 
 
 def bot_log(txt):
-    print("[Bot] {}".format(txt))
+    print("[BOT] {}".format(txt))
 
 def get_rand_fact(num):
-    # Using a random facts API
+    # Using a numbers facts API
     url = "http://numbersapi.com/{}".format(num)
     headers = {"Content-Type":"application/json"}
     response_raw = requests.request("GET", url, headers=headers)
@@ -23,21 +23,28 @@ def get_rand_fact(num):
     return response["text"]
 
 def parse_priv_msg(msg, msg_sender):
+    # Genecating a random number for get_rand_facts() and sending it
     bot.msg(msg_sender,
             get_rand_fact(random.randint(-100,1000)))
 
 def parse_channel_msg(msg, channel):
+    # If the message does not contain a command
     if msg[0] != "!":
         bot_log("No Command found, did nothing")
         return
 
     bot_log("Command "+msg+" on "+channel)
     
+    # If the command is !day
     if msg.find("!day") != -1:
         day = calendar.day_name[datetime.today().weekday()]
         bot.msg(channel, day)
+    
+    # If the command is time
     elif msg.find("!time") != -1:
         bot.msg(channel, datetime.now().strftime("%H:%M:%S"))
+    
+    # In case it is not a listed command
     else:
         bot.msg(channel, "No such command")
 
@@ -47,21 +54,38 @@ def proc_s_code(s_code):
         bot_log("Exiting...") 
         bot.isock.close()
         exit(1)
-        #bot = IRC_client(server,port,"test",channel)
-        #bot.msg(channel, "Bot ready")
-        #bot_log("READY")
-    
+
+
+# server = "10.0.42.17"
 server = "localhost"
 port = 6667
 bot_nick = "pyBot"
 channel = "#test"
 
+try:
+    if sys.argv[1] == "-h":
+        print("[Usage] ./bot.py <server> <port> <bot_nick> <channel with no '#'>")
+        exit(0)
+    server = sys.argv[1]
+    port = int(sys.argv[2])
+    bot_nick = sys.argv[3]
+    channel = "#{}".format(sys.argv[4])
+except Exception:
+    pass
+
+print("[CONN] server:{0}:{1}".format(server,port))
+print("[CONN] bot_nick:{}".format(bot_nick))
+print("[CONN] channel:{}".format(channel))
+
+# Init a client and its connection
 bot = IRC_client(server,port,bot_nick,channel)
 time.sleep(1)
 
+# Greeting message
 bot.msg(channel, "Bot ready")
 bot_log("READY")
 
+# Main loop 
 while True:
     time.sleep(0.1)
     try:
