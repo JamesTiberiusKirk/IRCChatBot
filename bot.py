@@ -6,8 +6,9 @@ import requests # Used to get random facts
 import json
 import random
 import calendar
+import sys
 
-from irc_client import *
+from irc_client import IRC_client
 from datetime import datetime
 from socket import error 
 
@@ -40,7 +41,7 @@ def parse_channel_msg(msg, channel):
         day = calendar.day_name[datetime.today().weekday()]
         bot.msg(channel, day)
     
-    # If the command is time
+    # If the command is !time
     elif msg.find("!time") != -1:
         bot.msg(channel, datetime.now().strftime("%H:%M:%S"))
     
@@ -55,7 +56,7 @@ def proc_s_code(s_code):
         bot.isock.close()
         exit(1)
 
-
+# Default values for theconnection
 server = "10.0.42.17"
 # server = "localhost"
 port = 6667
@@ -64,10 +65,12 @@ channel = "#test"
 
 # Parcing sys.argv 
 try:
+    # Help message
     if sys.argv[1] == "-h":
         print("[Usage] ./bot.py <server> <port> <bot_nick> <channel with no '#'>")
         exit(0)
     
+    # Seeting other variables if they exist
     server = sys.argv[1]
     port = int(sys.argv[2])
     bot_nick = sys.argv[3]
@@ -91,32 +94,40 @@ bot_log("READY")
 while True:
     time.sleep(0.1)
     try:
+        # Receiving messages
         byte_str = bot.isock.recv(512)
         f_msg = byte_str.decode()
         
+        # Handling PINGs
         if f_msg.find("PING") != -1 :
             bot.pong(f_msg.split(" ")[1])
         else:
             print("[IRC] "+f_msg)
         
             try:
-                s_code = f_msg.split(" ")[1]
-                proc_s_code(s_code)
+                # Splitting incoming messages
+                s_code = f_msg.split(" ")[1] # status code
+                proc_s_code(s_code) # proccess the status code
 
-                msg_sender = f_msg.split(":")[1].split("!")[0]
-                p_command = f_msg.split(" ")[1] #protocol command
-                msg_target = f_msg.split(" ")[2] 
-                msg = f_msg.split(":")[-1].strip()
+                msg_sender = f_msg.split(":")[1].split("!")[0] # gettimg message sender 
+                p_command = f_msg.split(" ")[1] # getting protocol command
+                msg_target = f_msg.split(" ")[2] # getting message target
+                msg = f_msg.split(":")[-1].strip() # getting message itself
 
+                # In case its a PRIVMSG command
                 if p_command == "PRIVMSG":
+                    # If it is a private message to the bot
                     if msg_target == bot_nick:
                         parse_priv_msg(msg, msg_sender)
+                    
+                    # If it is a message for the channel
                     elif msg_target == channel:
                         parse_channel_msg(msg, channel)
             except Exception:
+                # Exception can occur when parsing/splitting breaks
                 pass
 
     except error as serr:
-        print(len(f_msg))
+        # Exception can occur when message recieving breaks
         pass
 
