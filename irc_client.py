@@ -4,7 +4,7 @@ import socket
 
 # Logging function
 def log(txt):
-        print("[CLIENT] "+txt)
+        print("[CLIENT] {}".format(txt))
 
 class IRC_client:
 
@@ -28,41 +28,43 @@ class IRC_client:
 
 
     def join_server(self):
-        log("Joining Server: "+self.server)
+        log("Joining Server: {}".format(self.server))
 
         # Connecting socket
         self.isock.connect((self.server, self.port))
         time.sleep(0.5)
         
         # Composing message
-        msg = "USER "+self.bot_nick+" "
-        msg += self.hostname+" " 
-        msg += self.server+ " " 
-        msg += self.real_name
-        msg += "\r\n"
+        msg = "USER {0} {1} {2} {3}\r\n".format(
+            self.bot_nick, 
+            self.hostname, 
+            self.server, 
+            self.real_name)
 
+        #print(msg.encode())
         # Setting nickname
         self.set_nick(self.bot_nick)
 
-        log("Setting user: "+msg.strip())
+        log("Setting user: {}".format(msg.strip()))
         # Sending message and encoding it
-        self.isock.send(msg.encode());
+        self.isock.send(msg.encode())
         time.sleep(0.5)
 
     def set_nick(self, nick):
         # Composing message
-        msg = "NICK " + nick + "\r\n"
+        msg = "NICK {}\r\n".format(nick)
         log("Setting nick: "+msg.strip())
-        
+        #print(msg.encode())
+
         # Sending message and encoding it
         self.isock.send(msg.encode())
         time.sleep(0.5)
         
     def join_channel(self, channel):
         # Composing message
-        msg = "JOIN " + channel 
-        msg += "\r\n"
-        log("Joining channel "+ msg.strip())
+        msg = "JOIN {}\r\n".format(channel)
+        log("Joining channel {}".format(msg.strip()))
+        #print(msg.encode())
 
         # Sending message and encoding it
         self.isock.send(msg.encode())
@@ -70,8 +72,8 @@ class IRC_client:
 
     def msg(self, dest, message):
         # Composing message
-        msg = "PRIVMSG {0} :{1} \r\n".format(dest, message)
-
+        msg = "PRIVMSG {0} :{1}\r\n".format(dest, message)
+        #print(msg.encode())
         log(msg.strip())
         
         # Composing message
@@ -82,8 +84,8 @@ class IRC_client:
 
     def pong(self, server):
         # Composing message
-        msg = "PONG "+ server 
-        msg += "\r\n"
+        msg = "PONG {}".format(server)
+        #print(msg.encode())
 
         # Composing message
         self.isock.send(msg.encode())
